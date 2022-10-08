@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,9 +23,12 @@ namespace Layers.WebApi
             var id = (int)context.ActionArguments["id"];
 
             var count = await dbContext.Orders.CountAsync(x => x.UserEmail == currentUserService.Email && x.Id == id);
-            if (count != 1) { throw new Exception("Order not found"); }
-
-           return  await base.OnActionExecutionAsync(context, next);
+            if (count != 1)
+            {
+                context.Result = new NotFoundResult();
+                return;
+            }
+            await base.OnActionExecutionAsync(context, next);
         }
     }
 }

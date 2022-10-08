@@ -8,6 +8,7 @@ using Layers.ApplicationServices.Implementation;
 using Layers.ApplicationServices.Implementation.Order;
 using Layers.ApplicationServices.Interfaces;
 using Layers.ApplicationServices.Interfaces.Product;
+using Layers.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -50,26 +51,28 @@ namespace WebApi
             });
 
 
+            #region interceptor
+            //services.AddScoped<OrderService>();
+            //services.AddScoped<CheckOrderAsynInterceptor>();
 
-            services.AddScoped<OrderService>();
-            services.AddScoped<CheckOrderAsynInterceptor>();
+            //services.AddScoped<ReadOnlyOrderService>();
 
-            services.AddScoped<ReadOnlyOrderService>();
+            //services.AddScoped<IReadOnlyOrderService>(serviceProvider =>
+            //{
+            //    var serice = serviceProvider.GetRequiredService<ReadOnlyOrderService>();
+            //    var inter = serviceProvider.GetRequiredService<CheckOrderAsynInterceptor>();
 
-            services.AddScoped<IReadOnlyOrderService>(serviceProvider =>
-            {
-                var serice = serviceProvider.GetRequiredService<ReadOnlyOrderService>();
-                var inter = serviceProvider.GetRequiredService<CheckOrderAsynInterceptor>();
+            //    var proxy = new ProxyGenerator();
 
-                var proxy = new ProxyGenerator();
+            //    var result = proxy.CreateInterfaceProxyWithTargetInterface<IReadOnlyOrderService>(serice, inter);
 
-                var result = proxy.CreateInterfaceProxyWithTargetInterface<IReadOnlyOrderService>(serice, inter);
+            //    return result;
+            //});
+            #endregion
 
-                return result;
-            });
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IReadOnlyOrderService, ReadOnlyOrderService>();
 
-
-          
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IReadOnlyProductService, ReadOnlyProductService>();
 
@@ -81,6 +84,9 @@ namespace WebApi
             services.AddDbContext<IReadOnlyDbContext, ReadOnlyAppDbContext>(builder =>
                 builder.UseSqlServer(Configuration.GetConnectionString("Database")));
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+            services.AddScoped<CheckOrderFilterAttribute>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

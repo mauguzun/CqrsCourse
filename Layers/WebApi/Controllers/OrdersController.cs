@@ -1,5 +1,6 @@
 ﻿using ApplicationServices.Interfaces;
 using Layers.ApplicationServices.Interfaces;
+using Layers.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace WebApi.Controllers
             _readOnlyOrderService = readOnlyOrderService;
         }
 
+        [CheckOrderFilter]
         [HttpGet("{id}")]
         public Task<OrderDto> GetByIdAsync(int id)
         {

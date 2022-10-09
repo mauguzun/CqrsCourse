@@ -15,34 +15,43 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
+
+        IHandlerDispatcher handlerDispatcher;
+
+        public ProductsController(IHandlerDispatcher handlerDispatcher)
+        {
+            this.handlerDispatcher = handlerDispatcher;
+        }
+
+
         [HttpGet("{id}")]
         public Task<ProductDto> GetByIdAsync(int id, [FromServices] IRequestHandler<GetProductByIdQuery, ProductDto> handler)
         {
-            return handler.HandleAsync(new GetProductByIdQuery { Id = id });
+            return handlerDispatcher.SendAsync(new GetProductByIdQuery { Id = id });
         }
 
         [HttpPost]
         public Task<int> CreateAsync([FromBody] ChangeProductDto dto, [FromServices] IRequestHandler<CreateProductCommand, int> handler)
         {
-            return handler.HandleAsync(new CreateProductCommand { Dto = dto });
+            return handlerDispatcher.SendAsync(new CreateProductCommand { Dto = dto });
         }
 
         [HttpPut("{id}")]
         public Task UpdateAsync(int id, [FromBody] ChangeProductDto dto, [FromServices] IRequestHandler<UpdateProductCommand> handler)
         {
-            return handler.HandleAsync(new UpdateProductCommand { Id = id, Dto = dto });
+            return handlerDispatcher.SendAsync(new UpdateProductCommand { Id = id, Dto = dto });
         }
 
         [HttpDelete("{id}")]
         public Task DeleteAsync(int id, [FromServices] IRequestHandler<DeleteProductCommand> handler)
         {
-            return handler.HandleAsync(new DeleteProductCommand { Id = id });
+            return handlerDispatcher.SendAsync(new DeleteProductCommand { Id = id });
         }
 
         [HttpDelete]
         public Task DeleteAllAsync([FromBody]DeleteAllDto dto, [FromServices] IRequestHandler<DeleteAllProductsCommand> handler)
         {
-            return handler.HandleAsync(new DeleteAllProductsCommand { Dto = dto });
+            return handlerDispatcher.SendAsync(new DeleteAllProductsCommand { Dto = dto });
         }
 
     }

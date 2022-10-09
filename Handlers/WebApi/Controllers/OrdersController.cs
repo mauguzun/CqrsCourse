@@ -13,22 +13,29 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        [HttpGet("{id}")]
-        public Task<OrderDto> GetByIdAsync(int id, [FromServices] IRequestHandler<GetOrderByIdQuery, OrderDto> handler)
+        IHandlerDispatcher handlerDispatcher;
+
+        public OrdersController(IHandlerDispatcher handlerDispatcher)
         {
-            return handler.HandleAsync(new GetOrderByIdQuery { Id = id });
+            this.handlerDispatcher = handlerDispatcher;
+        }
+
+        [HttpGet("{id}")]
+        public Task<OrderDto> GetByIdAsync(int id)
+        {
+            return handlerDispatcher.SendAsync(new GetOrderByIdQuery { Id = id });
         }
 
         [HttpPost]
         public Task<int> CreateAsync([FromBody] ChangeOrderDto dto, [FromServices] IRequestHandler<CreateOrderCommand, int> handler)
         {
-            return handler.HandleAsync(new CreateOrderCommand { Dto = dto });
+            return handlerDispatcher.SendAsync(new CreateOrderCommand { Dto = dto });
         }
 
         [HttpPut("{id}")]
         public Task UpdateAsync(int id, [FromBody] ChangeOrderDto dto, [FromServices] IRequestHandler<UpdateOrderCommand> handler)
         {
-            return handler.HandleAsync(new UpdateOrderCommand { Id = id, Dto = dto });
+            return handlerDispatcher.SendAsync(new UpdateOrderCommand { Id = id, Dto = dto });
         }
 
     }

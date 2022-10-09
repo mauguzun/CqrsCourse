@@ -1,6 +1,8 @@
-﻿namespace Handlers.UseCases.Product.Commands.DeleteAllProducts
+﻿using Handlers.CqrsFramework;
+
+namespace Handlers.UseCases.Product.Commands.DeleteAllProducts
 {
-    public class DeleteAllProductsCommand
+    public class DeleteAllProductsCommand :IRequest
     {
         public DeleteAllDto Dto { get; set; }
     }

@@ -3,6 +3,7 @@ using ApplicationServices.Interfaces;
 using AutoMapper;
 using DataAccess.MsSql;
 using Handlers.CqrsFramework;
+using Handlers.UseCases.Order;
 using Handlers.UseCases.Order.Queries.GetOrderById;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +46,11 @@ namespace WebApi
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IHandlerDispatcher, HandlerDispatcher>();
+
+
+            services.AddScoped(typeof(IMiddleware<,>), typeof(CheckOrerMIdlleware<,>));
+
+
 
             services.Scan(selector =>
                 selector.FromAssemblyOf<GetOrderByIdQuery>()
